@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "products")
+@Entity(name = "clients")
 public class Client {
 
     @Id
@@ -31,6 +31,5 @@ public class Client {
     private int numHouse;
     @Column
     private int age;
-    @Column(name = "registration_date")
-    private LocalDate registrationDate;
+
 }
