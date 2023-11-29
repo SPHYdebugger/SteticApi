@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -24,4 +25,7 @@ public class Product {
     private float price;
     @Column(name = "registration_date")
     private LocalDate registrationDate;
+
+    @ManyToMany(mappedBy = "products")
+    private List<Order> orders;
 }

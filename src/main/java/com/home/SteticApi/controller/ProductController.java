@@ -5,7 +5,6 @@ import com.home.SteticApi.domain.Product;
 import com.home.SteticApi.exception.ProductException.ProductNotFoundException;
 import com.home.SteticApi.service.ProductService;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,23 +19,24 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping("/products/{productId}")
-    public Product getProductById(@PathVariable long productId) throws ProductNotFoundException {
-        Optional<Product> optionalProduct = productService.getProductById(productId);
-        return optionalProduct.orElseThrow(() -> new ProductNotFoundException(productId));
+    public Product findById(@PathVariable long productId) throws ProductNotFoundException {
+        Optional<Product> optionalProduct = productService.findProductById(productId);
+        Product product = optionalProduct.orElseThrow(() -> new ProductNotFoundException(productId));
+        return product;
     }
 
     @GetMapping("/products")
-    public List<Product> getAll(
+    public List<Product> findAll(
             @RequestParam(defaultValue = "") String name,
             @RequestParam(defaultValue = "0") float price
     ) {
         if (!(name.isEmpty()) && (price == 0)) {
-            return productService.getProductsByName(name);
+            return productService.findProductsByName(name);
         } else if (!name.isEmpty() && (price != 0)) {
-            return productService.getProductByNameAndPrice(name, price);
+            return productService.findProductByNameAndPrice(name, price);
         }
 
-        return productService.getProducts();
+        return productService.findAll();
     }
 
 

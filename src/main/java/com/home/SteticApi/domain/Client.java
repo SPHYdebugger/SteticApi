@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -32,4 +33,7 @@ public class Client {
     @Column
     private int age;
 
+
+    @OneToMany(mappedBy = "client")
+    private List<Order> orders;
 }

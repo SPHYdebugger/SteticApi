@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+
+
 @RestController
 public class ClientController {
 
@@ -21,18 +23,19 @@ public class ClientController {
     private ClientService clientService;
 
     @GetMapping("/clients/{clientId}")
-    public Client getClientById(@PathVariable long clientId) throws ClientNotFoundException {
-        Optional<Client> optionalClient = clientService.getClientById(clientId);
-        return optionalClient.orElseThrow(() -> new ClientNotFoundException(clientId));
+    public Client findById(@PathVariable long clientId) throws ClientNotFoundException {
+        Optional<Client> optionalClient = clientService.findById(clientId);
+        Client client = optionalClient.orElseThrow(() -> new ClientNotFoundException(clientId));
+        return client;
     }
 
     @GetMapping("/clients")
-    public List<Client> getAll(@RequestParam(defaultValue = "") String firstname) {
+    public List<Client> findAll(@RequestParam(defaultValue = "") String firstname) {
         if (!firstname.isEmpty()) {
-            return clientService.getClientByFirstname(firstname);
+            return clientService.findClientByFirstname(firstname);
         }
 
-        return clientService.getClients();
+        return clientService.findAll();
     }
 
     @PostMapping("/clients")

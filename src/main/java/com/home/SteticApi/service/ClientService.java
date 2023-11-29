@@ -15,19 +15,19 @@ public class ClientService {
     @Autowired
     private ClientRepository clientRepository;
 
-    public List<Client> getClients() {
+    public List<Client> findAll() {
         return clientRepository.findAll();
     }
 
-    public Optional<Client> getClientById(long id) {
+    public Optional<Client> findById(long id) {
         return clientRepository.findById(id);
     }
 
-    public List<Client> getClientByFirstname(String firstname) {
+    public List<Client> findClientByFirstname(String firstname) {
         return clientRepository.findByFirstname(firstname);
     }
 
-    public List<Client> getClientByFirstnameAndDNI(String firstname, String DNI) {
+    public List<Client> findClientByFirstnameAndDNI(String firstname, String DNI) {
         return clientRepository.findByFirstnameAndDNI(firstname, DNI);
     }
 

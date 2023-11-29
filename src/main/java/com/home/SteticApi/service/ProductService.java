@@ -14,22 +14,22 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    public List<Product> getProducts() {
+    public List<Product> findAll() {
         return productRepository.findAll();
     }
 
-    public Optional<Product> getProductById(long id) {
+    public Optional<Product> findProductById(long id) {
         return productRepository.findById(id);
     }
 
-    public List<Product> getProductsByName(String name) {
+    public List<Product> findProductsByName(String name) {
         return productRepository.findByName(name);
     }
-    public List<Product> getProductsByPrice(float price){
+    public List<Product> findProductsByPrice(float price){
         return productRepository.findByPrice(price);
     }
 
-    public List<Product> getProductByNameAndPrice(String name, float price) {
+    public List<Product> findProductByNameAndPrice(String name, float price) {
         return productRepository.findByNameAndPrice(name, price);
     }
 
