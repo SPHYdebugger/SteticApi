@@ -28,7 +28,6 @@ public class ProductService {
     public List<Product> findProductsByPrice(float price){
         return productRepository.findByPrice(price);
     }
-
     public List<Product> findProductByNameAndPrice(String name, float price) {
         return productRepository.findByNameAndPrice(name, price);
     }

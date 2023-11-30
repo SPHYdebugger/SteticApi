@@ -2,9 +2,11 @@ package com.home.SteticApi.controller;
 
 import com.home.SteticApi.domain.ErrorResponse;
 import com.home.SteticApi.domain.Product;
+import com.home.SteticApi.exception.OrderException.OrderNotFoundException;
 import com.home.SteticApi.exception.ProductException.ProductNotFoundException;
 import com.home.SteticApi.service.ProductService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,8 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+
+
     @GetMapping("/products/{productId}")
     public Product findById(@PathVariable long productId) throws ProductNotFoundException {
         Optional<Product> optionalProduct = productService.findProductById(productId);
@@ -28,21 +32,26 @@ public class ProductController {
     @GetMapping("/products")
     public List<Product> findAll(
             @RequestParam(defaultValue = "") String name,
-            @RequestParam(defaultValue = "0") float price
-    ) {
-        if (!(name.isEmpty()) && (price == 0)) {
+            @RequestParam(defaultValue = "0") long productId
+    ) throws ProductNotFoundException {
+        if (!(name.isEmpty()) && (productId == 0)) {
             return productService.findProductsByName(name);
-        } else if (!name.isEmpty() && (price != 0)) {
-            return productService.findProductByNameAndPrice(name, price);
+        } else if (name.isEmpty() && (productId != 0)) {
+            Optional<Product> optionalProduct = productService.findProductById(productId);
+            List<Product> listTemp = new ArrayList<>();
+            Product product = optionalProduct.orElseThrow(() -> new ProductNotFoundException(productId));
+            listTemp.add(product);
+            return listTemp;
         }
 
         return productService.findAll();
     }
 
 
-    @PostMapping("/products")
-    public void saveProduct(@RequestBody Product product) {
+    @PostMapping(value = "/products")
+    public ResponseEntity<Product> addProduct(@RequestBody Product product) {
         productService.saveProduct(product);
+        return new ResponseEntity<>(product, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/product/{productId}")
