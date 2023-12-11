@@ -3,6 +3,7 @@ package com.home.SteticApi.service;
 import com.home.SteticApi.domain.Client;
 
 import com.home.SteticApi.repository.ClientRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +38,7 @@ public class ClientService {
     public void saveClient(Client client) {
         clientRepository.save(client);
     }
-
+    @Transactional
     public void removeClient(String DNI) {
         clientRepository.deleteByDNI(DNI);
     }

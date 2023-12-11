@@ -24,49 +24,70 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
-    @GetMapping("/clients/{clientId}")
-    public Client findById(@PathVariable long clientId) throws ClientNotFoundException {
+    @GetMapping("/client/{clientId}")
+    public ResponseEntity<?> findById(@PathVariable long clientId) throws ClientNotFoundException {
         Optional<Client> optionalClient = clientService.findById(clientId);
         Client client = optionalClient.orElseThrow(() -> new ClientNotFoundException(clientId));
-        return client;
+        return new ResponseEntity<>(client, HttpStatus.OK);
     }
 
     // Obtener todos los clientes o filtrar uno por el nombre
     @GetMapping("/clients")
-    public List<Client> findAll(@RequestParam(defaultValue = "") String firstname) {
+    public ResponseEntity<List<Client>> findAll(@RequestParam(defaultValue = "") String firstname) throws ClientNotFoundException {
         if (!firstname.isEmpty()) {
-            return clientService.findClientByFirstname(firstname);
+            List<Client> clients = clientService.findClientByFirstname(firstname);
+            return new ResponseEntity<>(clients, HttpStatus.OK);
         }
-        return clientService.findAll();
+
+        List<Client> allClients = clientService.findAll();
+        return new ResponseEntity<>(allClients, HttpStatus.OK);
     }
+
 
 
     // Obtener un cliente por el DNI
     @GetMapping("/clients/{DNI}")
-    public Client findByDNI(@PathVariable String DNI) throws ClientNotFoundException {
+    public ResponseEntity<Client> findByDNI(@PathVariable String DNI) throws ClientNotFoundException {
         Optional<Client> optionalClient = clientService.findByDNI(DNI);
         Client client = optionalClient.orElseThrow(() -> new ClientNotFoundException(DNI));
-        return client;
+        return new ResponseEntity<>(client, HttpStatus.OK);
     }
+
 
 
     // Añadir un nuevo cliente
     @PostMapping("/clients")
-    public void saveClient(@RequestBody Client client) {
+    public ResponseEntity<Client> saveClient(@RequestBody Client client) {
         clientService.saveClient(client);
+        return new ResponseEntity<>(client, HttpStatus.CREATED);
     }
+
 
     // Borrar un cliente por DNI
     @DeleteMapping("/clients/{DNI}")
-    public void removeClient(@PathVariable String DNI) {
-        clientService.removeClient(DNI);
+    public ResponseEntity<Void> removeClient(@PathVariable String DNI) throws ClientNotFoundException {
+        Optional<Client> optionalClient = clientService.findByDNI(DNI);
+        if (optionalClient.isPresent()) {
+            clientService.removeClient(DNI);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            throw new ClientNotFoundException(DNI);
+        }
     }
+
 
     // Modificar un cliente por DNI
     @PutMapping("/client/{DNI}")
-    public void modifyClient(@RequestBody Client client, @PathVariable String DNI) {
-        clientService.modifyClient(client, DNI);
+    public ResponseEntity<Client> modifyClient(@RequestBody Client client, @PathVariable String DNI) throws ClientNotFoundException {
+        Optional<Client> optionalClient = clientService.findByDNI(DNI);
+        if (optionalClient.isPresent()) {
+            clientService.modifyClient(client, DNI);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            throw new ClientNotFoundException(DNI);
+        }
     }
+
 
 
     // Control de excepciones

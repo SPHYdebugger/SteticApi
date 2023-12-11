@@ -7,6 +7,7 @@ import com.home.SteticApi.exception.ProductException.ProductNotFoundException;
 import com.home.SteticApi.service.ProductService;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,31 +24,38 @@ public class ProductController {
 
     // Obtener todos los productos o filtrar uno por nombre o ID
     @GetMapping("/products")
-    public List<Product> findAll(
+    public ResponseEntity<List<Product>> findAll(
             @RequestParam(defaultValue = "") String name,
             @RequestParam(defaultValue = "0") long productId
     ) throws ProductNotFoundException {
-        if (!(name.isEmpty()) && (productId == 0)) {
-            return productService.findProductsByName(name);
-        } else if (name.isEmpty() && (productId != 0)) {
+        if (!name.isEmpty() && productId == 0) {
+            List<Product> products = productService.findProductsByName(name);
+            return new ResponseEntity<>(products, HttpStatus.OK);
+        } else if (name.isEmpty() && productId != 0) {
             Optional<Product> optionalProduct = productService.findProductById(productId);
-            List<Product> listTemp = new ArrayList<>();
             Product product = optionalProduct.orElseThrow(() -> new ProductNotFoundException(productId));
-            listTemp.add(product);
-            return listTemp;
+            return new ResponseEntity<>(Collections.singletonList(product), HttpStatus.OK);
         }
 
-        return productService.findAll();
+        List<Product> allProducts = productService.findAll();
+        return new ResponseEntity<>(allProducts, HttpStatus.OK);
     }
+
 
 
     // Obtener un producto por la ID
     @GetMapping("/products/{productId}")
-    public Product findById(@PathVariable long productId) throws ProductNotFoundException {
+    public ResponseEntity<Product> findById(@PathVariable long productId) throws ProductNotFoundException {
         Optional<Product> optionalProduct = productService.findProductById(productId);
-        Product product = optionalProduct.orElseThrow(() -> new ProductNotFoundException(productId));
-        return product;
+
+        if (optionalProduct.isPresent()) {
+            Product product = optionalProduct.get();
+            return new ResponseEntity<>(product, HttpStatus.OK);
+        } else {
+            throw new ProductNotFoundException(productId);
+        }
     }
+
 
 
     // Añadir un nuevo producto
@@ -56,16 +64,22 @@ public class ProductController {
         productService.saveProduct(product);
         return new ResponseEntity<>(product, HttpStatus.CREATED);
     }
+
     // Eliminar un producto
     @DeleteMapping("/product/{productId}")
-    public void removeProduct(@PathVariable long productId) {
+    public ResponseEntity<Void> removeProduct(@PathVariable long productId) {
         productService.removeProduct(productId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
     // Modificar un producto
     @PutMapping("/product/{productId}")
-    public void modifyProduct(@RequestBody Product product, @PathVariable long productId) {
+    public ResponseEntity<Void> modifyProduct(@RequestBody Product product, @PathVariable long productId) {
         productService.modifyProduct(product, productId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
+
+
 
 
     // Controlar las excepciones

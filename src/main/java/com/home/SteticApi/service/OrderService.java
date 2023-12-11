@@ -4,6 +4,7 @@ import com.home.SteticApi.domain.Client;
 import com.home.SteticApi.domain.Order;
 import com.home.SteticApi.domain.Product;
 import com.home.SteticApi.dto.OrderInDto;
+import com.home.SteticApi.dto.OrderOutDto;
 import com.home.SteticApi.exception.ClientException.ClientNotFoundException;
 import com.home.SteticApi.exception.ProductException.ProductNotFoundException;
 import com.home.SteticApi.repository.OrderRepository;
@@ -26,6 +27,7 @@ public class OrderService {
     @Autowired
     private ClientService clientService;
 
+
     public List<Order> findAll() {
         return orderRepository.findAll();
     }
@@ -34,6 +36,31 @@ public class OrderService {
         Client client = clientService.findById(clientId).orElseThrow(() -> new ClientNotFoundException(clientId));
         return orderRepository.findByClient(client);
     }
+
+    public List<Order> findByProducts(long productId) throws ProductNotFoundException {
+
+        List<Order> allOrders = orderRepository.findAll();
+        List<Order> ordersWithProduct = new ArrayList<>();
+
+        for (Order order : allOrders) {
+            List<Product> productsOfOrder = order.getProducts();
+            for (Product product : productsOfOrder) {
+                if (product.getId() == productId) {
+
+                    ordersWithProduct.add(order);
+                    break;
+                }
+            }
+        }
+
+        if (ordersWithProduct.isEmpty()) {
+            throw new ProductNotFoundException("No se encontraron compras con el producto con ID " + productId);
+        }
+        return ordersWithProduct;
+    }
+
+
+
 
     public Optional<Order> findById(long id) {
         return orderRepository.findById(id);
