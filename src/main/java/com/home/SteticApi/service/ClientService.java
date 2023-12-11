@@ -22,6 +22,9 @@ public class ClientService {
     public Optional<Client> findById(long id) {
         return clientRepository.findById(id);
     }
+    public Optional<Client> findByDNI(String DNI) {
+        return clientRepository.findByDNI(DNI);
+    }
 
     public List<Client> findClientByFirstname(String firstname) {
         return clientRepository.findByFirstname(firstname);
@@ -35,17 +38,16 @@ public class ClientService {
         clientRepository.save(client);
     }
 
-    public void removeClient(long clientId) {
-        clientRepository.deleteById(clientId);
+    public void removeClient(String DNI) {
+        clientRepository.deleteByDNI(DNI);
     }
 
-    public void modifyClient(Client newClient, long clientId) {
-        Optional<Client> client = clientRepository.findById(clientId);
+    public void modifyClient(Client newClient, String DNI) {
+        Optional<Client> client = clientRepository.findByDNI(DNI);
         if (client.isPresent()) {
             Client existingClient = client.get();
             existingClient.setFirstname(newClient.getFirstname());
             existingClient.setLastname(newClient.getLastname());
-            existingClient.setDNI(newClient.getDNI());
             existingClient.setCity(newClient.getCity());
             existingClient.setStreet(newClient.getStreet());
             existingClient.setNumHouse(newClient.getNumHouse());

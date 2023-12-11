@@ -21,14 +21,7 @@ public class ProductController {
     private ProductService productService;
 
 
-
-    @GetMapping("/products/{productId}")
-    public Product findById(@PathVariable long productId) throws ProductNotFoundException {
-        Optional<Product> optionalProduct = productService.findProductById(productId);
-        Product product = optionalProduct.orElseThrow(() -> new ProductNotFoundException(productId));
-        return product;
-    }
-
+    // Obtener todos los productos o filtrar uno por nombre o ID
     @GetMapping("/products")
     public List<Product> findAll(
             @RequestParam(defaultValue = "") String name,
@@ -48,22 +41,34 @@ public class ProductController {
     }
 
 
+    // Obtener un producto por la ID
+    @GetMapping("/products/{productId}")
+    public Product findById(@PathVariable long productId) throws ProductNotFoundException {
+        Optional<Product> optionalProduct = productService.findProductById(productId);
+        Product product = optionalProduct.orElseThrow(() -> new ProductNotFoundException(productId));
+        return product;
+    }
+
+
+    // Añadir un nuevo producto
     @PostMapping(value = "/products")
     public ResponseEntity<Product> addProduct(@RequestBody Product product) {
         productService.saveProduct(product);
         return new ResponseEntity<>(product, HttpStatus.CREATED);
     }
-
+    // Eliminar un producto
     @DeleteMapping("/product/{productId}")
     public void removeProduct(@PathVariable long productId) {
         productService.removeProduct(productId);
     }
-
+    // Modificar un producto
     @PutMapping("/product/{productId}")
     public void modifyProduct(@RequestBody Product product, @PathVariable long productId) {
         productService.modifyProduct(product, productId);
     }
 
+
+    // Controlar las excepciones
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ErrorResponse> productNotFoundException(ProductNotFoundException pnfe) {
         ErrorResponse errorResponse = new ErrorResponse(404, pnfe.getMessage());

@@ -57,5 +57,20 @@ public class OrderService {
         orderRepository.save(order);
     }
 
+    public void modifyOrder(Order newOrder, long orderId) {
+        Optional<Order> order = orderRepository.findById(orderId);
+        if (order.isPresent()) {
+            Order existingOrder = order.get();
+            existingOrder.setClient(newOrder.getClient());
+            existingOrder.setProducts(newOrder.getProducts());
+            existingOrder.setCreationDate(newOrder.getCreationDate());
+            orderRepository.save(existingOrder);
+        }
+    }
+
+    public void removeOrder(long orderId) {
+        orderRepository.deleteById(orderId);
+    }
+
     // TODO hacer el resto de métodos hasta el CRUD
 }
