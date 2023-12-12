@@ -24,12 +24,7 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
-    @GetMapping("/client/{clientId}")
-    public ResponseEntity<?> findById(@PathVariable long clientId) throws ClientNotFoundException {
-        Optional<Client> optionalClient = clientService.findById(clientId);
-        Client client = optionalClient.orElseThrow(() -> new ClientNotFoundException(clientId));
-        return new ResponseEntity<>(client, HttpStatus.OK);
-    }
+
 
     // Obtener todos los clientes o filtrar uno por el nombre
     @GetMapping("/clients")
@@ -43,7 +38,13 @@ public class ClientController {
         return new ResponseEntity<>(allClients, HttpStatus.OK);
     }
 
-
+    // Obtener un cliente por ID
+    @GetMapping("/client/{clientId}")
+    public ResponseEntity<?> findById(@PathVariable long clientId) throws ClientNotFoundException {
+        Optional<Client> optionalClient = clientService.findById(clientId);
+        Client client = optionalClient.orElseThrow(() -> new ClientNotFoundException(clientId));
+        return new ResponseEntity<>(client, HttpStatus.OK);
+    }
 
     // Obtener un cliente por el DNI
     @GetMapping("/clients/{DNI}")

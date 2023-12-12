@@ -1,18 +1,20 @@
 package com.home.SteticApi.domain;
 
+
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "products")
-public class Product {
+@Entity(name = "shops")
+public class Shop {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,16 +22,19 @@ public class Product {
     @Column
     private String name;
     @Column
-    private int size;
+    private String address;
     @Column
-    private String description;
+    private int employeesNumber;
     @Column
-    private float price;
-    @Column(name = "registration_date")
-    private LocalDate registrationDate;
+    private String city;
     @Column
-    private boolean dangerous;
+    private float meters;
+    @Column
+    private boolean solarium;
+    @Column
+    private LocalDate openDate;
 
-    @ManyToMany(mappedBy = "products")
-    private List<Order> orders;
+
+    @OneToMany(mappedBy = "shop")
+    private List<Employee> employees;
 }

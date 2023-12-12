@@ -33,6 +33,12 @@ public class Client {
     private int numHouse;
     @Column
     private int age;
+    @Column
+    private float height;
+    @Column
+    private LocalDate birthday;
+    @Column
+    private boolean VIP;
 
 
     @OneToMany(mappedBy = "client")

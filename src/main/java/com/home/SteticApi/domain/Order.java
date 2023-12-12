@@ -19,6 +19,8 @@ public class Order {
     private long id;
     @Column
     private String number;
+    @Column
+    private boolean onlineOrder;
     @Column(name = "creation_date")
     private LocalDate creationDate;
 
