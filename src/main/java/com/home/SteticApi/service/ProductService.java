@@ -5,6 +5,7 @@ import com.home.SteticApi.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +16,7 @@ public class ProductService {
     private ProductRepository productRepository;
 
     public List<Product> findAll() {
+
         return productRepository.findAll();
     }
 
@@ -25,6 +27,7 @@ public class ProductService {
     public List<Product> findProductsByName(String name) {
         return productRepository.findByName(name);
     }
+    public List<Product> findDangerousProducts(boolean dangerous) { return productRepository.findByDangerous(dangerous);}
     public List<Product> findProductsByPrice(float price){
         return productRepository.findByPrice(price);
     }
@@ -33,6 +36,7 @@ public class ProductService {
     }
 
     public void saveProduct(Product product) {
+        product.setRegistrationDate(LocalDate.now());
         productRepository.save(product);
     }
 
@@ -45,8 +49,10 @@ public class ProductService {
         if (product.isPresent()) {
           Product existingProduct = product.get();
           existingProduct.setName(newProduct.getName());
+          existingProduct.setSize(newProduct.getSize());
           existingProduct.setDescription(newProduct.getDescription());
           existingProduct.setPrice(newProduct.getPrice());
+          existingProduct.setDangerous(newProduct.isDangerous());
           productRepository.save(existingProduct);
         }
     }

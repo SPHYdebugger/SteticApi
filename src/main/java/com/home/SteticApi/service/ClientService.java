@@ -23,28 +23,26 @@ public class ClientService {
     public Optional<Client> findById(long id) {
         return clientRepository.findById(id);
     }
-    public Optional<Client> findByDNI(String DNI) {
-        return clientRepository.findByDNI(DNI);
-    }
+
 
     public List<Client> findClientByFirstname(String firstname) {
         return clientRepository.findByFirstname(firstname);
     }
-
-    public List<Client> findClientByFirstnameAndDNI(String firstname, String DNI) {
-        return clientRepository.findByFirstnameAndDNI(firstname, DNI);
+    public Optional<Client> findClientByDni(String dni){ return  clientRepository.findClientByDni(dni);}
+    public List<Client> findClientByCity(String city){ return clientRepository.findByCity(city);}
+    public List<Client> findClientByFirstnameAndDNI(String firstname, String dni) {
+        return clientRepository.findByFirstnameAndDni(firstname, dni);
     }
 
-    public void saveClient(Client client) {
-        clientRepository.save(client);
+    public void saveClient(Client client) { clientRepository.save(client);
     }
     @Transactional
-    public void removeClient(String DNI) {
-        clientRepository.deleteByDNI(DNI);
+    public void removeClient(String dni) {
+        clientRepository.deleteByDni(dni);
     }
 
-    public void modifyClient(Client newClient, String DNI) {
-        Optional<Client> client = clientRepository.findByDNI(DNI);
+    public void modifyClient(Client newClient, String dni) {
+        Optional<Client> client = clientRepository.findClientByDni(dni);
         if (client.isPresent()) {
             Client existingClient = client.get();
             existingClient.setFirstname(newClient.getFirstname());

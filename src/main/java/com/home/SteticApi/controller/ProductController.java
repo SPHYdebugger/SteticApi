@@ -6,13 +6,16 @@ import com.home.SteticApi.exception.OrderException.OrderNotFoundException;
 import com.home.SteticApi.exception.ProductException.ProductNotFoundException;
 import com.home.SteticApi.service.ProductService;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,13 +23,14 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+    private Logger logger = LoggerFactory.getLogger(ProductController.class);
 
 
-    // Obtener todos los productos o filtrar uno por nombre o ID
     @GetMapping("/products")
     public ResponseEntity<List<Product>> findAll(
             @RequestParam(defaultValue = "") String name,
-            @RequestParam(defaultValue = "0") long productId
+            @RequestParam(defaultValue = "0") long productId,
+            @RequestParam(defaultValue = "false") boolean dangerous
     ) throws ProductNotFoundException {
         if (!name.isEmpty() && productId == 0) {
             List<Product> products = productService.findProductsByName(name);
@@ -35,16 +39,25 @@ public class ProductController {
             Optional<Product> optionalProduct = productService.findProductById(productId);
             Product product = optionalProduct.orElseThrow(() -> new ProductNotFoundException(productId));
             return new ResponseEntity<>(Collections.singletonList(product), HttpStatus.OK);
+        } else if (name.isEmpty() && productId == 0 && dangerous) {
+            List<Product> dangerousProducts = productService.findDangerousProducts(true);
+            return new ResponseEntity<>(dangerousProducts, HttpStatus.OK);
         }
 
         List<Product> allProducts = productService.findAll();
         return new ResponseEntity<>(allProducts, HttpStatus.OK);
     }
 
+    // Añadir un nuevo producto
+    @PostMapping(value = "/products")
+    public ResponseEntity<Product> addProduct(@Valid @RequestBody Product product) {
+        productService.saveProduct(product);
+        return new ResponseEntity<>(product, HttpStatus.CREATED);
+    }
 
 
     // Obtener un producto por la ID
-    @GetMapping("/products/{productId}")
+    @GetMapping("/product/{productId}")
     public ResponseEntity<Product> findById(@PathVariable long productId) throws ProductNotFoundException {
         Optional<Product> optionalProduct = productService.findProductById(productId);
 
@@ -57,19 +70,16 @@ public class ProductController {
     }
 
 
-
-    // Añadir un nuevo producto
-    @PostMapping(value = "/products")
-    public ResponseEntity<Product> addProduct(@RequestBody Product product) {
-        productService.saveProduct(product);
-        return new ResponseEntity<>(product, HttpStatus.CREATED);
-    }
-
     // Eliminar un producto
     @DeleteMapping("/product/{productId}")
-    public ResponseEntity<Void> removeProduct(@PathVariable long productId) {
-        productService.removeProduct(productId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<?> removeProduct(@PathVariable long productId) throws ProductNotFoundException {
+        Optional<Product> optionalProduct = productService.findProductById(productId);
+        if (optionalProduct.isPresent()) {
+            productService.removeProduct(productId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            throw new ProductNotFoundException(productId);
+        }
     }
 
     // Modificar un producto
@@ -85,7 +95,20 @@ public class ProductController {
     // Controlar las excepciones
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ErrorResponse> productNotFoundException(ProductNotFoundException pnfe) {
-        ErrorResponse errorResponse = new ErrorResponse(404, pnfe.getMessage());
+        ErrorResponse errorResponse = ErrorResponse.generalError(404, pnfe.getMessage());
+        logger.error(pnfe.getMessage(), pnfe);
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleException(MethodArgumentNotValidException manve) {
+        Map<String, String> errors = new HashMap<>();
+        manve.getBindingResult().getAllErrors().forEach(error -> {
+            String fieldName = ((FieldError) error).getField();
+            String message = error.getDefaultMessage();
+            errors.put(fieldName, message);
+        });
+
+        return ResponseEntity.badRequest().body(ErrorResponse.validationError(errors));
     }
 }

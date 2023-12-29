@@ -12,7 +12,8 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
     List<Employee> findAll();
     List<Employee> findByName(String name);
 
-    Optional<Employee> findByDNI(String DNI);
+    Optional<Employee> findByDni(String dni);
+    List<Employee> findEmployeeByAcademicTitle(boolean academicTitle);
 
-    void deleteByDNI(String DNI);
+    void deleteByDni(String dni);
 }

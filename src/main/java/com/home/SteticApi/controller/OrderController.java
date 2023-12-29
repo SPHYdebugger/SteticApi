@@ -13,12 +13,17 @@ import com.home.SteticApi.service.ClientService;
 import com.home.SteticApi.service.OrderService;
 import com.home.SteticApi.service.ProductService;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -32,15 +37,35 @@ public class OrderController {
     private OrderService orderService;
     @Autowired
     private ProductService productService;
+    private Logger logger = LoggerFactory.getLogger(ProductController.class);
 
-    // Obtener todas las compras
+    // Obtener todas las compras o buscar por número de compra, fecha o si es compra online
     @GetMapping("/orders")
-    public List<Order> findOrdersDto() {
-        return orderService.findAll();
+    public ResponseEntity<List<Order>> findOrders(
+            @RequestParam(defaultValue = "") String number,
+            @RequestParam(defaultValue = "") String creationDate,
+            @RequestParam(defaultValue = "") Boolean onlineOrder
+    ) throws OrderNotFoundException {
+        if (!number.isEmpty()) {
+            Optional<Order> optionalOrder = orderService.findOrderByNumber(number);
+            Order order = optionalOrder.orElseThrow(() -> new OrderNotFoundException(number));
+            return new ResponseEntity<>(Collections.singletonList(order), HttpStatus.OK);
+        } else if (!creationDate.isEmpty()) {
+            LocalDate date = LocalDate.parse(creationDate); // Asegúrate de manejar el formato correcto
+            List<Order> orders = orderService.findOrdersByCreationDate(date);
+            return new ResponseEntity<>(orders, HttpStatus.OK);
+        } else if (onlineOrder != null) {
+            List<Order> orders = orderService.findOrdersByOnLineOrder(onlineOrder);
+            return new ResponseEntity<>(orders, HttpStatus.OK);
+        }
+
+        List<Order> allOrders = orderService.findAll();
+        return new ResponseEntity<>(allOrders, HttpStatus.OK);
     }
 
+
     // Obtener los datos de una compra
-    @GetMapping("/orders/{orderId}")
+    @GetMapping("/order/{orderId}")
     public ResponseEntity<Order> findById(@PathVariable long orderId) throws OrderNotFoundException {
         Optional<Order> optionalOrder = orderService.findById(orderId);
 
@@ -75,18 +100,11 @@ public class OrderController {
     }
 
 
-    // TODO compras de un producto
-    // Obtener todas las compras de un producto
-    //@GetMapping("/product/{productId}/orders")
-    //public List<OrderOutDto> findByProduct(@PathVariable long productId) throws ProductNotFoundException {
-    //    List<Order> ordersWithProduct = orderService.findByProducts(productId);
 
-      //  return listDtos;
-    //}
 
     // Añadir una compra a un cliente
     @PostMapping("/client/{clientId}/orders")
-    public ResponseEntity<Void> addOrder(@RequestBody OrderInDto orderInDto, @PathVariable long clientId)
+    public ResponseEntity<Void> addOrder(@Valid @RequestBody OrderInDto orderInDto, @PathVariable long clientId)
             throws ClientNotFoundException, ProductNotFoundException {
         Optional<Client> optionalClient = clientService.findById(clientId);
 
@@ -102,7 +120,7 @@ public class OrderController {
 
     // Modificar una compra
     @PutMapping("/order/{orderId}")
-    public ResponseEntity<Void> modifyOrder(@RequestBody Order order, @PathVariable long orderId)
+    public ResponseEntity<Void> modifyOrder(@Valid @RequestBody Order order, @PathVariable long orderId)
             throws OrderNotFoundException {
         Optional<Order> optionalOrder = orderService.findById(orderId);
 
@@ -135,13 +153,27 @@ public class OrderController {
     // Control de excepciones
     @ExceptionHandler(ClientNotFoundException.class)
     public ResponseEntity<ErrorResponse> clientNotFoundException(ClientNotFoundException unfe) {
-        ErrorResponse errorResponse = new ErrorResponse(404, unfe.getMessage());
+        ErrorResponse errorResponse = ErrorResponse.generalError(404, unfe.getMessage());
+        logger.error(unfe.getMessage(), unfe);
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ErrorResponse> productNotFoundException(ProductNotFoundException pnfe) {
-        ErrorResponse errorResponse = new ErrorResponse(404, pnfe.getMessage());
+        ErrorResponse errorResponse = ErrorResponse.generalError(404, pnfe.getMessage());
+        logger.error(pnfe.getMessage(), pnfe);
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleException(MethodArgumentNotValidException manve) {
+        Map<String, String> errors = new HashMap<>();
+        manve.getBindingResult().getAllErrors().forEach(error -> {
+            String fieldName = ((FieldError) error).getField();
+            String message = error.getDefaultMessage();
+            errors.put(fieldName, message);
+        });
+
+        return ResponseEntity.badRequest().body(ErrorResponse.validationError(errors));
     }
 }

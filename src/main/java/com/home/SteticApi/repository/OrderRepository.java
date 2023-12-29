@@ -2,6 +2,8 @@ package com.home.SteticApi.repository;
 
 import com.home.SteticApi.domain.Client;
 import com.home.SteticApi.domain.Order;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +19,8 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     Optional<Order> findById(long id);
     List<Order> findByClient(Client client);
     Order findByNumber(String number);
+    List<Order> findByCreationDate(LocalDate date);
+    List<Order> findByOnlineOrder(boolean onlineOrder);
 
     List<Order> findByProducts(Product product);
 }

@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,8 +24,12 @@ public class ShopService {
     public Optional<Shop> findById(long id) {
         return shopRepository.findById(id);
     }
+    public List<Shop> findShopByName(String name) { return shopRepository.findByName(name);}
+    public List<Shop> findShopsByCity (String city) { return shopRepository.findByCity(city);}
+    public List<Shop> findShopsBySolarium (boolean solarium) { return shopRepository.findBySolarium(solarium);}
 
     public void saveShop(Shop shop) {
+        shop.setOpenDate(LocalDate.now());
         shopRepository.save(shop);
     }
 

@@ -11,9 +11,12 @@ import java.util.Optional;
 @Repository
 public interface ShopRepository extends CrudRepository<Shop, Long> {
     List<Shop> findAll();
-    List<Shop> findByCity(String city);
+
+    List<Shop> findByName(String name);
 
     Optional<Shop> findById(long id);
+    List<Shop> findByCity(String city);
+    List<Shop> findBySolarium(boolean solarium);
 
     void deleteById(long id);
 }

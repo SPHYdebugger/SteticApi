@@ -2,6 +2,8 @@ package com.home.SteticApi.domain;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,11 +22,15 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column
+    @NotNull(message = "El nombre no puede ser nulo")
+    @NotBlank(message = "El nombre no puede estar en blanco")
     private String firstname;
     @Column
     private String lastname;
     @Column
-    private String DNI;
+    @NotNull(message = "El DNI no puede ser nulo")
+    @NotBlank(message = "El DNI no puede estar en blanco")
+    private String dni;
     @Column
     private String city;
     @Column
@@ -38,6 +44,7 @@ public class Client {
     @Column
     private LocalDate birthday;
     @Column
+    @NotNull(message = "El campo VIP no puede ser nulo")
     private boolean VIP;
 
 
