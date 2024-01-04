@@ -38,13 +38,13 @@ public class EmployeeService {
     public void saveEmployeeByShop(Employee employee, long shopId) {
 
         shopRepository.findById(shopId).ifPresent(employee::setShop);
-        employee.setRegisterDate(LocalDate.now());
+        employee.setRegisterDate(LocalDate.now().toString());
         employeeRepository.save(employee);
     }
 
     public void saveEmployee(Employee employee) {
 
-        employee.setRegisterDate(LocalDate.now());
+        employee.setRegisterDate(LocalDate.now().toString());
         employeeRepository.save(employee);
     }
 

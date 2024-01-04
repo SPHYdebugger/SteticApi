@@ -31,7 +31,7 @@ public class ShopController {
     public ResponseEntity<List<Shop>> findAll(
             @RequestParam(defaultValue = "") String name,
             @RequestParam(defaultValue = "") String city,
-            @RequestParam(defaultValue = "false") boolean solarium
+            @RequestParam(defaultValue = "") String solarium
     ) throws ShopNotFoundException {
         if (!name.isEmpty() && city.isEmpty()) {
             List<Shop> shops = shopService.findShopByName(name);
@@ -39,11 +39,13 @@ public class ShopController {
         } else if (name.isEmpty() && !city.isEmpty()) {
             List<Shop> shops = shopService.findShopsByCity(city);
             return new ResponseEntity<>(shops, HttpStatus.OK);
-        } else if (name.isEmpty() && city.isEmpty() && solarium) {
-            List<Shop> solariumShops = shopService.findShopsBySolarium(solarium);
+        } else if (name.isEmpty() && city.isEmpty() && solarium.equals("true")) {
+            List<Shop> solariumShops = shopService.findShopsBySolarium(true);
+            return new ResponseEntity<>(solariumShops, HttpStatus.OK);
+        } else if (name.isEmpty() && city.isEmpty() && solarium.equals("false")) {
+            List<Shop> solariumShops = shopService.findShopsBySolarium(false);
             return new ResponseEntity<>(solariumShops, HttpStatus.OK);
         }
-
         List<Shop> allShops = shopService.findAll();
         return new ResponseEntity<>(allShops, HttpStatus.OK);
     }

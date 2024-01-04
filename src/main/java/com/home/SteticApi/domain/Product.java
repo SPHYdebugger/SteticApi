@@ -33,7 +33,7 @@ public class Product {
     @Positive(message = "El precio debe ser mayor que cero")
     private float price;
     @Column(name = "registration_date")
-    private LocalDate registrationDate;
+    private String registrationDate;
     @Column
     @NotNull(message = "El campo dangerous no puede ser nula")
     private boolean dangerous = false;
@@ -73,11 +73,11 @@ public class Product {
         this.price = price;
     }
 
-    public LocalDate getRegistrationDate() {
+    public String  getRegistrationDate() {
         return registrationDate;
     }
 
-    public void setRegistrationDate(LocalDate registrationDate) {
+    public void setRegistrationDate(String registrationDate) {
         this.registrationDate = registrationDate;
     }
 

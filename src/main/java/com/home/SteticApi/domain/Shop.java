@@ -40,9 +40,23 @@ public class Shop {
     @NotNull(message = "El campo solarium no puede ser nulo")
     private boolean solarium = false;
     @Column
-    private LocalDate openDate;
+    private String openDate;
+    @Column
+    private double latitude;
+    @Column
+    private double longitude;
 
 
     @OneToMany(mappedBy = "shop")
     private List<Employee> employees;
+
+
+    public Shop(String name, String address, String city, boolean solarium, double latitude, double longitude) {
+        this.name = name;
+        this.address = address;
+        this.city = city;
+        this.solarium = solarium;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 }

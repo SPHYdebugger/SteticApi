@@ -27,7 +27,7 @@ public class Order {
     private boolean onlineOrder= false;
     @Column(name = "creation_date")
     @NotNull(message = "La fecha no puede ser nula")
-    private LocalDate creationDate;
+    private String creationDate;
     @JsonBackReference("order_client")
     @ManyToOne
     @JoinColumn(name = "client_id")

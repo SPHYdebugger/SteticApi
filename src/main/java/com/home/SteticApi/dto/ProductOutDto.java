@@ -19,7 +19,9 @@ public class ProductOutDto {
     private String description;
     private int size;
     private float price;
-    private LocalDate registrationDate;
+    private String  registrationDate;
     private boolean dangerous;
+
+
 
 }

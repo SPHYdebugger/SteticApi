@@ -2,13 +2,10 @@ package com.home.SteticApi.controller;
 
 import com.home.SteticApi.domain.ErrorResponse;
 import com.home.SteticApi.domain.Product;
-import com.home.SteticApi.exception.OrderException.OrderNotFoundException;
 import com.home.SteticApi.exception.ProductException.ProductNotFoundException;
 import com.home.SteticApi.service.ProductService;
-
-import java.util.*;
-
 import jakarta.validation.Valid;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,20 +27,26 @@ public class ProductController {
     public ResponseEntity<List<Product>> findAll(
             @RequestParam(defaultValue = "") String name,
             @RequestParam(defaultValue = "0") long productId,
-            @RequestParam(defaultValue = "false") boolean dangerous
+            @RequestParam(defaultValue = "") String dangerous
     ) throws ProductNotFoundException {
         if (!name.isEmpty() && productId == 0) {
             List<Product> products = productService.findProductsByName(name);
-            return new ResponseEntity<>(products, HttpStatus.OK);
+            if (products.isEmpty()){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity<>(products, HttpStatus.OK);
+            }
         } else if (name.isEmpty() && productId != 0) {
             Optional<Product> optionalProduct = productService.findProductById(productId);
             Product product = optionalProduct.orElseThrow(() -> new ProductNotFoundException(productId));
             return new ResponseEntity<>(Collections.singletonList(product), HttpStatus.OK);
-        } else if (name.isEmpty() && productId == 0 && dangerous) {
+        } else if (dangerous.equals("false") && productId == 0) {
+            List<Product> dangerousProducts = productService.findDangerousProducts(false);
+            return new ResponseEntity<>(dangerousProducts, HttpStatus.OK);
+        } else if (dangerous.equals("true") && productId == 0) {
             List<Product> dangerousProducts = productService.findDangerousProducts(true);
             return new ResponseEntity<>(dangerousProducts, HttpStatus.OK);
         }
-
         List<Product> allProducts = productService.findAll();
         return new ResponseEntity<>(allProducts, HttpStatus.OK);
     }
@@ -88,6 +91,8 @@ public class ProductController {
         productService.modifyProduct(product, productId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+
 
 
 

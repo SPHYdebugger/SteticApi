@@ -1,16 +1,14 @@
 package com.home.SteticApi.controller;
 
-import com.home.SteticApi.domain.Client;
 import com.home.SteticApi.domain.Employee;
 import com.home.SteticApi.domain.ErrorResponse;
 import com.home.SteticApi.domain.Shop;
-import com.home.SteticApi.exception.ClientException.ClientNotFoundException;
 import com.home.SteticApi.exception.EmployeeException.EmployeeNotFoundException;
-import com.home.SteticApi.exception.ProductException.ProductNotFoundException;
 import com.home.SteticApi.exception.ShopException.ShopNotFoundException;
 import com.home.SteticApi.service.EmployeeService;
 import com.home.SteticApi.service.ShopService;
 import jakarta.validation.Valid;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.*;
 
 @RestController
 public class EmployeeController {
@@ -39,14 +35,22 @@ public class EmployeeController {
     ) throws EmployeeNotFoundException {
         if (!name.isEmpty()) {
             List<Employee> employees = employeeService.findEmployeeByName(name);
-            return new ResponseEntity<>(employees, HttpStatus.OK);
+            if (employees.isEmpty()){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity<>(employees, HttpStatus.OK);
+            }            
         } else if (!dni.isEmpty()) {
             Optional<Employee> optionalEmployee = employeeService.findEmployeeByDni(dni);
             Employee employee = optionalEmployee.orElseThrow(() -> new EmployeeNotFoundException(dni));
             return new ResponseEntity<>(Collections.singletonList(employee), HttpStatus.OK);
         } else if (academicTitle != null) {
             List<Employee> employees = employeeService.findEmployeeByAcademicTitle(academicTitle);
-            return new ResponseEntity<>(employees, HttpStatus.OK);
+            if (employees.isEmpty()){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity<>(employees, HttpStatus.OK);
+            }            
         }
 
         List<Employee> allEmployees = employeeService.findAll();
@@ -113,7 +117,7 @@ public class EmployeeController {
             }
             return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
-            // La tienda no existe
+
             throw new ShopNotFoundException(shopId);
         }
     }
@@ -172,7 +176,7 @@ public class EmployeeController {
         }
     }
 
-    // Control de excepciones
+    
     // Control de excepciones
     @ExceptionHandler(EmployeeNotFoundException.class)
     public ResponseEntity<ErrorResponse> employeeNotFoundException(EmployeeNotFoundException pnfe) {

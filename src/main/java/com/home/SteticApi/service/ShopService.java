@@ -29,7 +29,7 @@ public class ShopService {
     public List<Shop> findShopsBySolarium (boolean solarium) { return shopRepository.findBySolarium(solarium);}
 
     public void saveShop(Shop shop) {
-        shop.setOpenDate(LocalDate.now());
+        shop.setOpenDate(LocalDate.now().toString());
         shopRepository.save(shop);
     }
 

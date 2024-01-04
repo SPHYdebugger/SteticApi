@@ -3,20 +3,15 @@ package com.home.SteticApi.controller;
 import com.home.SteticApi.domain.Client;
 import com.home.SteticApi.domain.ErrorResponse;
 import com.home.SteticApi.domain.Order;
-import com.home.SteticApi.domain.Product;
 import com.home.SteticApi.dto.OrderInDto;
-import com.home.SteticApi.dto.OrderOutDto;
 import com.home.SteticApi.exception.ClientException.ClientNotFoundException;
 import com.home.SteticApi.exception.OrderException.OrderNotFoundException;
 import com.home.SteticApi.exception.ProductException.ProductNotFoundException;
 import com.home.SteticApi.service.ClientService;
 import com.home.SteticApi.service.OrderService;
 import com.home.SteticApi.service.ProductService;
-
-import java.time.LocalDate;
-import java.util.*;
-
 import jakarta.validation.Valid;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-
 
 @RestController
 public class OrderController {
@@ -51,12 +45,19 @@ public class OrderController {
             Order order = optionalOrder.orElseThrow(() -> new OrderNotFoundException(number));
             return new ResponseEntity<>(Collections.singletonList(order), HttpStatus.OK);
         } else if (!creationDate.isEmpty()) {
-            LocalDate date = LocalDate.parse(creationDate); // Asegúrate de manejar el formato correcto
-            List<Order> orders = orderService.findOrdersByCreationDate(date);
-            return new ResponseEntity<>(orders, HttpStatus.OK);
+            List<Order> orders = orderService.findOrdersByCreationDate(creationDate);
+            if (orders.isEmpty()){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity<>(orders, HttpStatus.OK);
+            }            
         } else if (onlineOrder != null) {
             List<Order> orders = orderService.findOrdersByOnLineOrder(onlineOrder);
-            return new ResponseEntity<>(orders, HttpStatus.OK);
+            if (orders.isEmpty()){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity<>(orders, HttpStatus.OK);
+            }            
         }
 
         List<Order> allOrders = orderService.findAll();
@@ -90,11 +91,11 @@ public class OrderController {
             if (!orders.isEmpty()) {
                 return new ResponseEntity<>(orders, HttpStatus.OK);
             } else {
-                // El cliente existe pero no tiene compras
+                
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
         } else {
-            // El cliente no existe
+            
             throw new ClientNotFoundException(clientId);
         }
     }
@@ -112,7 +113,7 @@ public class OrderController {
             orderService.addOrder(orderInDto, clientId);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
-            // El cliente no existe
+            
             throw new ClientNotFoundException(clientId);
         }
     }
@@ -128,7 +129,7 @@ public class OrderController {
             orderService.modifyOrder(order, orderId);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            // La orden no existe
+            
             throw new OrderNotFoundException(orderId);
         }
     }
@@ -144,7 +145,7 @@ public class OrderController {
             orderService.removeOrder(orderId);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            // La orden no existe
+            
             throw new OrderNotFoundException(orderId);
         }
     }

@@ -20,5 +20,5 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
     Optional<Product> deleteById(long productId);
 
 
-    List<Product> findByNameAndPrice(String name, float price);
+    List<Product> findByIdAndNameAndPrice(int id, String name, float price);
 }

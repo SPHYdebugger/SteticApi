@@ -2,13 +2,10 @@ package com.home.SteticApi.controller;
 
 import com.home.SteticApi.domain.Client;
 import com.home.SteticApi.domain.ErrorResponse;
-
-import com.home.SteticApi.domain.Product;
 import com.home.SteticApi.exception.ClientException.ClientNotFoundException;
-
-import com.home.SteticApi.exception.ProductException.ProductNotFoundException;
 import com.home.SteticApi.service.ClientService;
 import jakarta.validation.Valid;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.*;
-
 
 @RestController
 public class ClientController {
@@ -39,14 +33,23 @@ public class ClientController {
     ) throws ClientNotFoundException {
         if (!firstname.isEmpty()) {
             List<Client> clients = clientService.findClientByFirstname(firstname);
-            return new ResponseEntity<>(clients, HttpStatus.OK);
+            if (clients.isEmpty()){
+                return new ResponseEntity<>(clients, HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity<>(clients, HttpStatus.OK);
+            }
+            
         } else if (!dni.isEmpty()) {
             Optional<Client> optionalClient = clientService.findClientByDni(dni);
             Client client = optionalClient.orElseThrow(() -> new ClientNotFoundException(dni));
             return new ResponseEntity<>(Collections.singletonList(client), HttpStatus.OK);
         } else if (!city.isEmpty()) {
             List<Client> clients = clientService.findClientByCity(city);
-            return new ResponseEntity<>(clients, HttpStatus.OK);
+            if (clients.isEmpty()){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity<>(clients, HttpStatus.OK);
+            }            
         }
 
         List<Client> allClients = clientService.findAll();
@@ -97,6 +100,19 @@ public class ClientController {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             throw new ClientNotFoundException(dni);
+        }
+    }
+
+    // modificar por Id
+
+    @PutMapping("/clients/{id}")
+    public ResponseEntity<Client> modifyClientById(@Valid @RequestBody Client client, @PathVariable long id) throws ClientNotFoundException {
+        Optional<Client> optionalClient = clientService.findById(id);
+        if (optionalClient.isPresent()) {
+            clientService.modifyClientById(client, id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+      throw new ClientNotFoundException(client.getDni());
         }
     }
 

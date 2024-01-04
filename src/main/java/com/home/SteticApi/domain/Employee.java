@@ -35,7 +35,7 @@ public class Employee {
     @NotNull(message = "El campo AcademicTitle no puede ser nulo")
     private boolean academicTitle = false;
     @Column(name = "register_date")
-    private LocalDate registerDate;
+    private String registerDate;
 
     @JsonBackReference("employee_shop")
     @ManyToOne

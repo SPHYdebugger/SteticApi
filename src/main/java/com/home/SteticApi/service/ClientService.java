@@ -54,4 +54,18 @@ public class ClientService {
             clientRepository.save(existingClient);
         }
     }
+
+    public void modifyClientById(Client newClient, long id) {
+        Optional<Client> client = clientRepository.findById(id);
+        if (client.isPresent()) {
+            Client existingClient = client.get();
+            existingClient.setFirstname(newClient.getFirstname());
+            existingClient.setLastname(newClient.getLastname());
+            existingClient.setCity(newClient.getCity());
+            existingClient.setStreet(newClient.getStreet());
+            existingClient.setNumHouse(newClient.getNumHouse());
+            existingClient.setAge(newClient.getAge());
+            clientRepository.save(existingClient);
+        }
+    }
 }

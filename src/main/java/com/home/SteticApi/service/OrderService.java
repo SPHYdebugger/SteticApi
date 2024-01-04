@@ -34,7 +34,7 @@ public class OrderService {
     public Optional<Order> findOrderByNumber(String number) {
         return Optional.ofNullable(orderRepository.findByNumber(number));
     }
-    public List<Order> findOrdersByCreationDate(LocalDate date) { return orderRepository.findByCreationDate(date);}
+    public List<Order> findOrdersByCreationDate(String date) { return orderRepository.findByCreationDate(date);}
 
     public List<Order> findOrdersByOnLineOrder(boolean onlineOrder) { return orderRepository.findByOnlineOrder(onlineOrder);}
     public List<Order> findByClient(long clientId) throws ClientNotFoundException {
@@ -87,7 +87,7 @@ public class OrderService {
         order.setProducts(products);
         order.setOnlineOrder(orderInDto.isOnlineOrder());
         order.setNumber(UUID.randomUUID().toString());
-        order.setCreationDate(LocalDate.now());
+        order.setCreationDate(LocalDate.now().toString());
         orderRepository.save(order);
 
         order.setOnlineOrder(orderInDto.isOnlineOrder());

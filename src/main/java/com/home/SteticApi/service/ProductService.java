@@ -31,12 +31,12 @@ public class ProductService {
     public List<Product> findProductsByPrice(float price){
         return productRepository.findByPrice(price);
     }
-    public List<Product> findProductByNameAndPrice(String name, float price) {
-        return productRepository.findByNameAndPrice(name, price);
+    public List<Product> findProductByIdAndNameAndPrice(int id, String name, float price) {
+        return productRepository.findByIdAndNameAndPrice(id, name, price);
     }
 
     public void saveProduct(Product product) {
-        product.setRegistrationDate(LocalDate.now());
+        product.setRegistrationDate(LocalDate.now().toString());
         productRepository.save(product);
     }
 

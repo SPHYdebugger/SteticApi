@@ -19,7 +19,7 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     Optional<Order> findById(long id);
     List<Order> findByClient(Client client);
     Order findByNumber(String number);
-    List<Order> findByCreationDate(LocalDate date);
+    List<Order> findByCreationDate(String date);
     List<Order> findByOnlineOrder(boolean onlineOrder);
 
     List<Order> findByProducts(Product product);
