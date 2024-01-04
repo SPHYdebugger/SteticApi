@@ -136,4 +136,7 @@ public class ClientController {
 
         return ResponseEntity.badRequest().body(ErrorResponse.validationError(errors));
     }
+
+
+
 }
