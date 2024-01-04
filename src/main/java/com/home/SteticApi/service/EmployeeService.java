@@ -1,12 +1,15 @@
 package com.home.SteticApi.service;
 
 import com.home.SteticApi.domain.Employee;
+import com.home.SteticApi.domain.Shop;
 import com.home.SteticApi.repository.EmployeeRepository;
+import com.home.SteticApi.repository.ShopRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +18,8 @@ public class EmployeeService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+    @Autowired
+    private ShopRepository shopRepository;
 
     public List<Employee> findAll() {
         return employeeRepository.findAll();
@@ -27,8 +32,19 @@ public class EmployeeService {
     public List<Employee> findEmployeeByName(String name) {
         return employeeRepository.findByName(name);
     }
+    public Optional<Employee> findEmployeeByDni(String dni) { return employeeRepository.findByDni(dni);}
+    public List<Employee> findEmployeeByAcademicTitle(boolean academicTitle) { return employeeRepository.findEmployeeByAcademicTitle(academicTitle);}
+
+    public void saveEmployeeByShop(Employee employee, long shopId) {
+
+        shopRepository.findById(shopId).ifPresent(employee::setShop);
+        employee.setRegisterDate(LocalDate.now().toString());
+        employeeRepository.save(employee);
+    }
 
     public void saveEmployee(Employee employee) {
+
+        employee.setRegisterDate(LocalDate.now().toString());
         employeeRepository.save(employee);
     }
 
@@ -42,7 +58,7 @@ public class EmployeeService {
         if (employee.isPresent()) {
             Employee existingEmployee = employee.get();
             existingEmployee.setName(newEmployee.getName());
-            existingEmployee.setDNI(newEmployee.getDNI());
+            existingEmployee.setDni(newEmployee.getDni());
             existingEmployee.setAge(newEmployee.getAge());
             existingEmployee.setHeight(newEmployee.getHeight());
             existingEmployee.setAcademicTitle(newEmployee.isAcademicTitle());

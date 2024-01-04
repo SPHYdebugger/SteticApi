@@ -31,11 +31,17 @@ public class OrderService {
     public List<Order> findAll() {
         return orderRepository.findAll();
     }
+    public Optional<Order> findOrderByNumber(String number) {
+        return Optional.ofNullable(orderRepository.findByNumber(number));
+    }
+    public List<Order> findOrdersByCreationDate(String date) { return orderRepository.findByCreationDate(date);}
 
+    public List<Order> findOrdersByOnLineOrder(boolean onlineOrder) { return orderRepository.findByOnlineOrder(onlineOrder);}
     public List<Order> findByClient(long clientId) throws ClientNotFoundException {
         Client client = clientService.findById(clientId).orElseThrow(() -> new ClientNotFoundException(clientId));
         return orderRepository.findByClient(client);
     }
+
 
     public List<Order> findByProducts(long productId) throws ProductNotFoundException {
 
@@ -72,16 +78,19 @@ public class OrderService {
         Client client = clientService.findById(clientId).orElseThrow(() -> new ClientNotFoundException(clientId));
         order.setClient(client);
 
+
         List<Product> products = new ArrayList<>();
         for (long productId: orderInDto.getProductIds()) {
             Product product = productService.findProductById(productId).orElseThrow(() -> new ProductNotFoundException(productId));
             products.add(product);
         }
         order.setProducts(products);
-
+        order.setOnlineOrder(orderInDto.isOnlineOrder());
         order.setNumber(UUID.randomUUID().toString());
-        order.setCreationDate(LocalDate.now());
+        order.setCreationDate(LocalDate.now().toString());
         orderRepository.save(order);
+
+        order.setOnlineOrder(orderInDto.isOnlineOrder());
     }
 
     public void modifyOrder(Order newOrder, long orderId) {

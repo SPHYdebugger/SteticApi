@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface ProductRepository extends CrudRepository<Product, Long> {
     List<Product> findAll();
     List<Product> findByName(String name);
+    List<Product> findByDangerous(boolean dangerous);
 
     @Override
     Optional<Product> findById(Long id);
@@ -19,5 +20,5 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
     Optional<Product> deleteById(long productId);
 
 
-    List<Product> findByNameAndPrice(String name, float price);
+    List<Product> findByIdAndNameAndPrice(int id, String name, float price);
 }
