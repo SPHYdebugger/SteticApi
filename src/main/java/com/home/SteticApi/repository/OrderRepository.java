@@ -34,4 +34,6 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     Order findByNumber(@Param("number") String number);
 
     List<Order> findByProducts(Product product);
+
+    //esto es una prueba2
 }
