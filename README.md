@@ -1,5 +1,5 @@
 <p align="center">
- <img width="200px" src="https://github.com/SPHYdebugger/SPHYdebugger/blob/main/programador.png">
+ <img width="200px" src="https://github.com/SPHYdebugger/SteticApi/blob/master/1_vFiGOTV1S8yz0RTIQteTjw.png">
 <h1 align="center"> SteticAPI</h1>
 <h2 align="center"> Aplicación web con SPRIN BOOT</h2>
 <h3 align="center">Aplicación en JAVA con base de datos H2, Diseño OpenApi 3.0 y comprobaciones con POSTMAN</h3>
