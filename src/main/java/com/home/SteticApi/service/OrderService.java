@@ -4,7 +4,6 @@ import com.home.SteticApi.domain.Client;
 import com.home.SteticApi.domain.Order;
 import com.home.SteticApi.domain.Product;
 import com.home.SteticApi.dto.OrderInDto;
-import com.home.SteticApi.dto.OrderOutDto;
 import com.home.SteticApi.exception.ClientException.ClientNotFoundException;
 import com.home.SteticApi.exception.ProductException.ProductNotFoundException;
 import com.home.SteticApi.repository.OrderRepository;
@@ -37,10 +36,7 @@ public class OrderService {
     public List<Order> findOrdersByCreationDate(String date) { return orderRepository.findByCreationDate(date);}
 
     public List<Order> findOrdersByOnLineOrder(boolean onlineOrder) { return orderRepository.findByOnlineOrder(onlineOrder);}
-    public List<Order> findByClient(long clientId) throws ClientNotFoundException {
-        Client client = clientService.findById(clientId).orElseThrow(() -> new ClientNotFoundException(clientId));
-        return orderRepository.findByClient(client);
-    }
+    public List<Order> findByClient(long clientId) { return orderRepository.findByClientId(clientId); }
 
 
     public List<Order> findByProducts(long productId) throws ProductNotFoundException {
@@ -72,7 +68,7 @@ public class OrderService {
         return orderRepository.findById(id);
     }
 
-    public void addOrder(OrderInDto orderInDto, long clientId) throws ClientNotFoundException, ProductNotFoundException {
+    public Order addOrder(OrderInDto orderInDto, long clientId) throws ClientNotFoundException, ProductNotFoundException {
         Order order = new Order();
 
         Client client = clientService.findById(clientId).orElseThrow(() -> new ClientNotFoundException(clientId));
@@ -91,13 +87,14 @@ public class OrderService {
         orderRepository.save(order);
 
         order.setOnlineOrder(orderInDto.isOnlineOrder());
+        return order;
     }
 
     public void modifyOrder(Order newOrder, long orderId) {
         Optional<Order> order = orderRepository.findById(orderId);
         if (order.isPresent()) {
             Order existingOrder = order.get();
-            existingOrder.setClient(newOrder.getClient());
+            existingOrder.setOnlineOrder(newOrder.isOnlineOrder());
             existingOrder.setProducts(newOrder.getProducts());
             existingOrder.setCreationDate(newOrder.getCreationDate());
             orderRepository.save(existingOrder);

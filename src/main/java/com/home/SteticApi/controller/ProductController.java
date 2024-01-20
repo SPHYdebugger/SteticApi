@@ -1,7 +1,10 @@
 package com.home.SteticApi.controller;
 
+import com.home.SteticApi.domain.Client;
 import com.home.SteticApi.domain.ErrorResponse;
+import com.home.SteticApi.domain.Order;
 import com.home.SteticApi.domain.Product;
+import com.home.SteticApi.exception.ClientException.ClientNotFoundException;
 import com.home.SteticApi.exception.ProductException.ProductNotFoundException;
 import com.home.SteticApi.service.ProductService;
 import jakarta.validation.Valid;
@@ -87,9 +90,14 @@ public class ProductController {
 
     // Modificar un producto
     @PutMapping("/product/{productId}")
-    public ResponseEntity<Void> modifyProduct(@RequestBody Product product, @PathVariable long productId) {
-        productService.modifyProduct(product, productId);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Product> modifyProduct(@Valid @RequestBody Product product, @PathVariable Long productId) throws ProductNotFoundException {
+        Optional<Product> optionalProduct = productService.findProductById(productId);
+        if (optionalProduct.isPresent()) {
+            productService.modifyProduct(product, productId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            throw new ProductNotFoundException(productId);
+        }
     }
 
 
