@@ -18,4 +18,5 @@ public interface ClientRepository extends CrudRepository<Client, Long> {
     List<Client> findByCity(String city);
 
     Optional<Client> deleteByDni(String dni);
+    Optional<Client> deleteById(long clientId);
 }

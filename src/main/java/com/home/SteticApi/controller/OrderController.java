@@ -4,6 +4,7 @@ import com.home.SteticApi.domain.Client;
 import com.home.SteticApi.domain.ErrorResponse;
 import com.home.SteticApi.domain.Order;
 import com.home.SteticApi.dto.OrderInDto;
+import com.home.SteticApi.dto.OrderOutDto;
 import com.home.SteticApi.exception.ClientException.ClientNotFoundException;
 import com.home.SteticApi.exception.OrderException.OrderNotFoundException;
 import com.home.SteticApi.exception.ProductException.ProductNotFoundException;
@@ -11,6 +12,8 @@ import com.home.SteticApi.service.ClientService;
 import com.home.SteticApi.service.OrderService;
 import com.home.SteticApi.service.ProductService;
 import jakarta.validation.Valid;
+
+import java.time.LocalDate;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +68,8 @@ public class OrderController {
     }
 
 
+
+
     // Obtener los datos de una compra
     @GetMapping("/order/{orderId}")
     public ResponseEntity<Order> findById(@PathVariable long orderId) throws OrderNotFoundException {
@@ -105,13 +110,15 @@ public class OrderController {
 
     // Añadir una compra a un cliente
     @PostMapping("/client/{clientId}/orders")
-    public ResponseEntity<Void> addOrder(@Valid @RequestBody OrderInDto orderInDto, @PathVariable long clientId)
+    public ResponseEntity<Order> addOrder(@Valid @RequestBody OrderInDto orderInDto, @PathVariable long clientId)
             throws ClientNotFoundException, ProductNotFoundException {
         Optional<Client> optionalClient = clientService.findById(clientId);
 
         if (optionalClient.isPresent()) {
-            orderService.addOrder(orderInDto, clientId);
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            Order order = orderService.addOrder(orderInDto, clientId);
+
+
+            return new ResponseEntity<>(order, HttpStatus.CREATED);
         } else {
             
             throw new ClientNotFoundException(clientId);
@@ -126,6 +133,7 @@ public class OrderController {
         Optional<Order> optionalOrder = orderService.findById(orderId);
 
         if (optionalOrder.isPresent()) {
+            order.setCreationDate(LocalDate.now().toString());
             orderService.modifyOrder(order, orderId);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
@@ -143,7 +151,7 @@ public class OrderController {
 
         if (optionalOrder.isPresent()) {
             orderService.removeOrder(orderId);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             
             throw new OrderNotFoundException(orderId);

@@ -80,7 +80,7 @@ public class EmployeeController {
             shop.getEmployees().add(employee);
             shopService.saveShop(shop);
 
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            return new ResponseEntity<>(employee, HttpStatus.CREATED);
         } else {
 
             throw new ShopNotFoundException(shopId);
@@ -92,7 +92,7 @@ public class EmployeeController {
     public ResponseEntity<Employee> saveEmployee(@Valid @RequestBody Employee employee)
              {
             employeeService.saveEmployee(employee);
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            return new ResponseEntity<>(employee, HttpStatus.CREATED);
 
     }
 

@@ -41,6 +41,11 @@ public class ClientService {
         clientRepository.deleteByDni(dni);
     }
 
+    @Transactional
+    public void removeClientById(long clientId) {
+        clientRepository.deleteById(clientId);
+    }
+
     public void modifyClient(Client newClient, String dni) {
         Optional<Client> client = clientRepository.findClientByDni(dni);
         if (client.isPresent()) {

@@ -52,7 +52,7 @@ public class ShopController {
 
 
     // Obtener los datos de una tienda por ID
-    @GetMapping("/shop/{shopId}")
+    @GetMapping("/shops/{shopId}")
     public ResponseEntity<Shop> findShopById(@PathVariable long shopId) throws ShopNotFoundException {
         Optional<Shop> optionalShop = shopService.findById(shopId);
 
@@ -72,7 +72,7 @@ public class ShopController {
     }
 
     // Modificar una tienda por ID
-    @PutMapping("/shop/{shopId}")
+    @PutMapping("/shops/{shopId}")
     public ResponseEntity<Void> modifyShop(@Valid @RequestBody Shop shop, @PathVariable long shopId) throws ShopNotFoundException {
         Optional<Shop> optionalShop = shopService.findById(shopId);
 

@@ -46,10 +46,25 @@ paths:
           description: Devuelve la lista completa de clientes o el cliente filtrado
           content:
             application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Client'
+              example:
+
+                - id: 1
+                  firstname: Juan
+                  lastname: Pérez
+                  DNI: "12345678A"
+                  city: Barcelona
+                  street: Calle Principal
+                  numHouse: 123
+                  age: 30
+                - id: 2
+                  firstname: María
+                  lastname: López
+                  DNI: "87654321B"
+                  city: Madrid
+                  street: Calle Secundaria
+                  numHouse: 456
+                  age: 25
+
     post:
       tags:
         - clients
@@ -59,15 +74,64 @@ paths:
         required: true
         content:
           application/json:
-            schema:
-              $ref: '#/components/schemas/Client'
+            examples:
+              Example1:
+                summary: Ejemplo de nuevo cliente1
+                value: |
+                  {
+                      "firstname": "Manuel",
+                      "lastname": "Martinez",
+                      "DNI": "98765432C",
+                      "city": "Sevilla",
+                      "street": "Calle Nueva",
+                      "numHouse": 789,
+                      "age": 28
+                  }
+              Example2:
+                summary: Ejemplo de nuevo cliente2
+                value: |
+                  {
+                      "firstname": "Antonio",
+                      "lastname": "Carrasco",
+                      "DNI": "87878767R",
+                      "city": "Pamplona",
+                      "street": "Calle Nueva",
+                      "numHouse": 79,
+                      "age": 35
+                  }
+
       responses:
         '201':
           description: Cliente añadido correctamente
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Client'
+              examples:
+                Example1:
+                  summary: cliente1 creado
+                  value: |
+                    {
+                        "id": 1,
+                        "firstname": "Manuel",
+                        "lastname": "Martinez",
+                        "DNI": "98765432C",
+                        "city": "Sevilla",
+                        "street": "Calle Nueva",
+                        "numHouse": 789,
+                        "age": 28
+                    }
+                Example2:
+                  summary: cliente2 creado
+                  value: |
+                    {
+                        "id": 2,
+                        "firstname": "Antonio",
+                        "lastname": "Carrasco",
+                        "DNI": "87878767R",
+                        "city": "Pamplona",
+                        "street": "Calle Nueva",
+                        "numHouse": 79,
+                        "age": 35
+                    }
         '400':
           description: Error de validación en los datos del cliente
           content:
@@ -94,19 +158,47 @@ paths:
           schema:
             type: integer
             format: int64
+            example: 1
+
       responses:
         '200':
           description: Devuelve el cliente solicitado
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Client'
+              examples:
+                Example1:
+                  summary: cliente con ID 1
+                  value: |
+                    {
+                        "id": 1,
+                        "firstname": "Juan",
+                        "lastname": "Pérez",
+                        "DNI": "12345678A",
+                        "city": "Barcelona",
+                        "street": "Calle Principal",
+                        "numHouse": 123,
+                        "age": 30
+                    }
+                Example2:
+                  summary: cliente con ID 2
+                  value: |
+                    {
+                        "id": 2,
+                        "firstname": "Antonio",
+                        "lastname": "Carrasco",
+                        "DNI": "87878767R",
+                        "city": "Pamplona",
+                        "street": "Calle Nueva",
+                        "numHouse": 79,
+                        "age": 35
+                    }
         '404':
           description: Cliente no encontrado
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Cliente no encontrado"
 
   /client/{DNI}:
     get:
@@ -120,13 +212,43 @@ paths:
           required: true
           schema:
             type: string
+            example: Ejemplo con el DNI 87878767R
+
+
+
       responses:
         '200':
           description: Devuelve el cliente solicitado
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Client'
+              examples:
+                Example1:
+                  summary: cliente con DNI 87878767R
+                  value: |
+                    {
+                        "id": 2,
+                        "firstname": "Antonio",
+                        "lastname": "Carrasco",
+                        "DNI": "87878767R",
+                        "city": "Pamplona",
+                        "street": "Calle Nueva",
+                        "numHouse": 79,
+                        "age": 35
+                    }
+                Example2:
+                  summary: cliente con DNI 12345678A
+                  value: |
+                    {
+                        "id": 1,
+                        "firstname": "Juan",
+                        "lastname": "Pérez",
+                        "DNI": "12345678A",
+                        "city": "Barcelona",
+                        "street": "Calle Principal",
+                        "numHouse": 123,
+                        "age": 30
+                    }
+
         '404':
           description: Cliente no encontrado
           content:
@@ -157,8 +279,9 @@ paths:
           description: Cliente no encontrado
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Cliente no encontrado"
         '500':
           description: Internal Server Error
           content:
@@ -179,8 +302,29 @@ paths:
       requestBody:
         content:
           application/json:
-            schema:
-              $ref: '#/components/schemas/Client'
+            examples:
+              Example1:
+                summary: Modificar cliente con DNI 87878767R
+                value: |
+                  {
+                      "firstname": "Antonio",
+                      "lastname": "Carmona",
+                      "city": "Palencia",
+                      "street": "Calle Vieja",
+                      "numHouse": 79,
+                      "age": 35
+                  }
+              Example2:
+                summary: Modificar cliente con DNI 12345678A
+                value: |
+                  {
+                      "firstname": "Santiago",
+                      "lastname": "Perez",
+                      "city": "Vigo",
+                      "street": "Carretera",
+                      "numHouse": 79,
+                      "age": 45
+                  }
       responses:
         '200':
           description: El cliente se ha modificado correctamente
@@ -188,8 +332,9 @@ paths:
           description: Cliente no encontrado
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Cliente no encontrado"
         '500':
           description: Internal Server Error
           content:
@@ -386,10 +531,17 @@ paths:
           description: Devuelve la lista completa de compras o las filtradas
           content:
             application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Order'
+              example:
+                - id: 1
+                  number: "sdfsdf8wef-sdfswfwef9"
+                  creationDate: "20-01-24"
+                  onlineOredr: true
+
+                - id: 2
+                  number: "0977rdf8wef-sd454wfwef9"
+                  creationDate: "20-01-24"
+                  onlineOredr: flase
+
 
 
   /client/{clientId}/orders:
@@ -410,18 +562,26 @@ paths:
           description: Devuelve la lista de compras del cliente solicitado
           content:
             application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Order'
+              example:
+                - id: 1
+                  number: "sdfsdf8wef-sdfswfwef9"
+                  creationDate: "20-01-24"
+                  onlineOredr: true
+
+                - id: 2
+                  number: "0977rdf8wef-sd454wfwef9"
+                  creationDate: "20-01-24"
+                  onlineOredr: flase
+
         '204':
           description: El cliente no tiene compras registradas
         '404':
           description: Cliente no encontrado
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Cliente no encontrado"
     post:
       tags:
         - clients
@@ -439,8 +599,21 @@ paths:
         required: true
         content:
           application/json:
-            schema:
-              $ref: '#/components/schemas/Order'
+            examples:
+              Example1:
+                summary: Añadir compra1
+                value: |
+                  {
+                      "onlineOreder": true,
+                      "productsId": [3, 5]
+                  }
+              Example2:
+                summary: Añadir compra2
+                value: |
+                  {
+                      "onlineOreder": false,
+                      "productsId": [8]
+                  }
       responses:
         '201':
           description: Compra añadida correctamente

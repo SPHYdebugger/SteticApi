@@ -30,7 +30,7 @@ public class ClientController {
             @RequestParam(defaultValue = "") String firstname,
             @RequestParam(defaultValue = "") String dni,
             @RequestParam(defaultValue = "") String city
-    ) throws ClientNotFoundException {
+    ) throws ClientNotFoundException{
         if (!firstname.isEmpty()) {
             List<Client> clients = clientService.findClientByFirstname(firstname);
             if (clients.isEmpty()){
@@ -38,7 +38,6 @@ public class ClientController {
             } else {
                 return new ResponseEntity<>(clients, HttpStatus.OK);
             }
-            
         } else if (!dni.isEmpty()) {
             Optional<Client> optionalClient = clientService.findClientByDni(dni);
             Client client = optionalClient.orElseThrow(() -> new ClientNotFoundException(dni));
@@ -49,7 +48,7 @@ public class ClientController {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             } else {
                 return new ResponseEntity<>(clients, HttpStatus.OK);
-            }            
+            }
         }
 
         List<Client> allClients = clientService.findAll();
@@ -91,6 +90,18 @@ public class ClientController {
         }
     }
 
+    //borrar un cliente por ID
+    @DeleteMapping("/clients/{clientId}")
+    public ResponseEntity<Void> removeClientById(@PathVariable long clientId) throws ClientNotFoundException {
+        Optional<Client> optionalClient = clientService.findById(clientId);
+        if (optionalClient.isPresent()) {
+            clientService.removeClientById(clientId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            throw new ClientNotFoundException(clientId);
+        }
+    }
+
     // Modificar un cliente por DNI
     @PutMapping("/client/{dni}")
     public ResponseEntity<Client> modifyClient(@Valid @RequestBody Client client, @PathVariable String dni) throws ClientNotFoundException {
@@ -116,7 +127,6 @@ public class ClientController {
         }
     }
 
-
     // Control de excepciones
     @ExceptionHandler(ClientNotFoundException.class)
     public ResponseEntity<ErrorResponse> clientNotFoundException(ClientNotFoundException pnfe) {
@@ -136,6 +146,10 @@ public class ClientController {
 
         return ResponseEntity.badRequest().body(ErrorResponse.validationError(errors));
     }
+
+
+
+// esto es una prueba
 
 
 

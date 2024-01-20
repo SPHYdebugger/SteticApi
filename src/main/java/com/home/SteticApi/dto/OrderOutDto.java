@@ -17,6 +17,7 @@ public class OrderOutDto {
     private long id;
     private String number;
     private LocalDate creationDate;
+    private boolean onlineOrder;
     private Client client;
     private List<ProductOutDto> productIds;
 }
